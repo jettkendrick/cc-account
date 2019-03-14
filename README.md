@@ -18,11 +18,17 @@ the software is just a Creditcard class that creates new instances of credit car
 - interest: used to store accrued interest value
 - transactions and activity: were used to store transaction data and the date they occured 
 
-add_charge and add_payment adds to or subtracts from the overall outstanding balence.  Transaction activity is recorded as well so you are able to see what type of trasaction occured on a specific day. 
+add_charge and add_payment adds to or subtracts from the overall outstanding balence. If the charge exceeds the limit an error is raised.  Transaction activity is recorded as well so you are able to see what type of trasaction occured on a specific day. 
 
 ```ruby
 #using this 
 credit.view_activity # can return something like this {"2019-03-13"=>[-500], "2019-03-28"=>[200, -50], "2019-03-23"=>[-100]}
 ```
 with that you can see your payments and charges and on what day they occured. 
+
+the day_progress function was used to advance through the billing period as well as store the accrued interest for each passing day.  This method also allowed me to deal with the fluctuations in outstanding balance so that the value of accrued interest adjusts accordingly. 
+
+and the check_balance function is used to check the current outstanding balance. if the balance is checked before day 30 the balance returns without interest added and if it is checked on day 30 it provide the balance plus the interest from the 30 day billing period. 
+
+lastly, the different test scenarios were ran through minitest and they both passed. 
 
