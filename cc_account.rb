@@ -48,7 +48,7 @@ class Creditcard
 	 end
 
 	 def view_activity 
-		  p @transactions
+		  puts @transactions
 	 end 
 
 
@@ -60,7 +60,15 @@ class Creditcard
     end 
   end
 end
-
+			credit = Creditcard.new(35, 1000)
+		  credit.add_charge(500)
+		  credit.day_progess(15)
+		  credit.add_payment(200)
+		  credit.add_charge(50)
+		  credit.day_progess(10)
+		  credit.add_charge(100)
+		  credit.day_progess(5)
+		  credit.view_activity
 
 
 
