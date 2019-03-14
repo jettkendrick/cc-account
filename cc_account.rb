@@ -1,52 +1,77 @@
 require 'date'
-require "active_support/core_ext/date_and_time/calculations"
-
-
 class Creditcard
   attr_reader :apr, :limit, :opened 
-  attr_accessor :balance, :transactions, :charges, :activity
+  attr_accessor :balance, :transactions, :interest, :activity, :day
 
-		def initialize(apr, limit, _date = Date.today)
-		  @apr = (apr / 100.0 / 365)
-		  @limit = limit
-		  @balance = 0
-		  @transactions = {}
-		  @opened = Date.today.to_s
-		  @activity = @transactions[@opened] = []
+	def initialize(apr, limit, _date = Date.today)
+		@apr = (apr / 100.0 / 365)
+		@interest = 0
+		@limit = limit
+		@balance = 0
+		@transactions = {}
+		@day = 0
+		@opened = Date.today.to_s
+		@activity = @transactions[@opened] = []
+	end
+
+	def day_progess(days)
+		@day = days
+		if @balance > 0 
+			@interest += balance * @apr * days
 		end
+	end 
 
-		def what_day
-			 day = rand(30)
-			@opened = (Date.today + day).to_s
-			@activity = @transactions[@opened] = []
-		end 
-
-    def add_charge(amount)
-		    unless @balance + amount > @limit
-			   @balance += amount
-		    else 
-				 raise ArgumentError.new("Over Limit!")
-		    end
-		   @activity << -amount
-	  end
+	def add_charge(amount)
+		unless @balance + amount > @limit
+			@balance += amount
+		else 
+			raise ArgumentError.new("Over Limit!")
+		end
+		@opened = (Date.today + @day).to_s
+		if @transactions.has_key?(@opened)
+		  @activity << -amount
+		else
+		  @activity = @transactions[@opened] = []
+		  @activity << -amount
+		end  
+	end
    
-    def add_payment(amount)
-			   @balance += amount
-		     @activity << amount
-	  end
+  def add_payment(amount)
+		@balance -= amount
+		@opened = (Date.today + @day).to_s
+		if @transactions.has_key?(@opened)
+		  @activity << amount
+		else
+		  @activity = @transactions[@opened] = []
+			@activity << amount
+		end
+	end
 
-	  def next 
-	  	@opened = (Date.today + 1).to_s
-	  end 
+	def view_activity 
+		p @transactions
+	end 
+
+
+	def check_balance(day_number)
+		if day_number % 30 == 0 
+     	(balance + interest).round(2)
+   	else
+      balance.round(2)
+    end 
+  end
 end
 
 credit = Creditcard.new(35, 1000)
-credit.add_charge(25)
-credit.add_charge(22)
-credit.what_day
-credit.add_payment(14)
-p credit.balance
-p credit.transactions
+credit.add_charge(500)
+credit.day_progess(15)
+credit.add_payment(200)
+credit.add_charge(50)
+credit.day_progess(10)
+credit.add_charge(100)
+credit.day_progess(5)
+credit.check_balance(30)
+
+
 
 
 
